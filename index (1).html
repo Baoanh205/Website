@@ -1,0 +1,178 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Web Đa Ngôn Ngữ</title>
+    <style>
+        body {
+            font-family: 'Verdana', sans-serif;
+            font-size: 16px;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #3498db;
+            padding: 1rem;
+            text-align: center;
+        }
+        nav {
+            background-color: #2ecc71;
+            padding: 0.5rem;
+        }
+        main {
+            background-color: #ecf0f1;
+            font-size: 18px;
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 1rem;
+        }
+        footer {
+            background-color: #34495e;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+        li {
+            display: inline-block;
+            width: 200px;
+            margin: 0.5rem;
+            padding: 0.5rem;
+            background: #dfe6e9;
+            border-radius: 5px;
+        }
+        h1 {
+            text-align: center;
+            font-family: 'Georgia', serif;
+            color: #e74c3c;
+        }
+        p {
+            line-height: 1.6;
+        }
+        .image-gallery {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        img {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        a {
+            color: #2ecc71;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .lang-switch {
+            margin: 1rem;
+            text-align: center;
+        }
+        .lang-switch a {
+            margin: 0 0.5rem;
+            font-weight: bold;
+        }
+        [lang="en"] .vi, [lang="vi"] .en {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 class="vi">Chào Mừng Đến Với Trang Web Đa Ngôn Ngữ</h1>
+        <h1 class="en">Welcome to the Multilingual Website</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="#" class="vi">Trang Chủ</a><a href="#" class="en">Home</a></li>
+            <li><a href="#" class="vi">Giới Thiệu</a><a href="#" class="en">About</a></li>
+            <li><a href="#" class="vi">Liên Hệ</a><a href="#" class="en">Contact</a></li>
+        </ul>
+    </nav>
+    <div class="lang-switch">
+        <a href="#" onclick="document.documentElement.lang='vi'; return false;">Tiếng Việt</a>
+        <a href="#" onclick="document.documentElement.lang='en'; return false;">English</a>
+    </div>
+    <main>
+        <section>
+            <h2 class="vi">Giới Thiệu</h2>
+            <h2 class="en">Introduction</h2>
+            <p class="vi">Đây là trang web mẫu hỗ trợ cả tiếng Việt và tiếng Anh.</p>
+            <p class="en">This is a sample website supporting both Vietnamese and English.</p>
+            <ul>
+                <li class="vi">Mục 1: Thiết kế đa ngôn ngữ</li>
+                <li class="en">Item 1: Multilingual design</li>
+                <li class="vi">Mục 2: Giao diện đáp ứng</li>
+                <li class="en">Item 2: Responsive layout</li>
+                <li class="vi">Mục 3: Dễ dàng chuyển đổi ngôn ngữ</li>
+                <li class="en">Item 3: Easy language switching</li>
+            </ul>
+        </section>
+        <section>
+            <h2 class="vi">Thư Viện Hình Ảnh</h2>
+            <h2 class="en">Image Gallery</h2>
+            <div class="image-gallery">
+                <img src="https://placehold.co/200x200?text=Hình+1" alt="Hình ảnh 1 / Image 1">
+                <img src="https://placehold.co/200x200?text=Hình+2" alt="Hình ảnh 2 / Image 2">
+                <img src="https://placehold.co/200x200?text=Hình+3" alt="Hình ảnh 3 / Image 3">
+            </div>
+        </section>
+        <section>
+            <h2 class="vi">Tài Nguyên</h2>
+            <h2 class="en">Resources</h2>
+            <p class="vi">Tìm hiểu thêm về HTML tại <a href="https://developer.mozilla.org/en-US/docs/Web/HTML" target="_blank" rel="noopener noreferrer">MDN Web Docs</a>.</p>
+            <p class="en">Learn more about HTML at <a href="https://developer.mozilla.org/en-US/docs/Web/HTML" target="_blank" rel="noopener noreferrer">MDN Web Docs</a>.</p>
+        </section>
+    </main>
+    <footer>
+        <p class="vi">© 2025 Trang Web Đa Ngôn Ngữ</p>
+        <p class="en">© 2025 Multilingual Website</p>
+    </footer>
+</body>
+</html>
